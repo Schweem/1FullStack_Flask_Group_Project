@@ -15,7 +15,7 @@ Hello {{ name }}
                 <select class="form-control" id="location" name="location">
                     <!-- Option values will be station_id from the bikeshare_stations table -->
                    {% for _, station in stations.iterrows() %}
-                    <option value="{{ station['name'] }}">{{ station['name'] }}</option>
+                    <option value="{{ station['station_id'] }}">{{ station['name'] }}</option>
                 {% endfor %}
                 </select>
             </div>
