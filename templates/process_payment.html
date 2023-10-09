@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Payment</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h2>Process Payment</h2>
+
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input type="text" class="form-control" id="cardNumber" placeholder="Enter card number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" class="form-control" id="amount" placeholder="Enter amount" required>
+            </div>
+
+            <div class="form-group">
+                <label for="currency">Currency</label>
+                <input type="text" class="form-control" id="currency" placeholder="Enter currency code (e.g., USD)" required>
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="processPayment()">Process Payment</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Your custom script for processing payment -->
+    <script>
+        function processPayment() {
+            // Get values from the form
+            var cardNumber = document.getElementById('cardNumber').value;
+            var amount = document.getElementById('amount').value;
+            var currency = document.getElementById('currency').value;
+
+            // Create payment data object
+            var paymentData = {
+                card_number: cardNumber,
+                amount: parseFloat(amount),
+                currency: currency
+            };
+
+            // Make the AJAX request to your Flask endpoint
+            $.ajax({
+                url: '{{ url_for("process_payment") }}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(paymentData),
+                success: function(response) {
+                    alert('Payment processed successfully!');
+                    console.log(response);
+                },
+                error: function(error) {
+                    alert('Payment processing failed. Check console for details.');
+                    console.error(error);
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>

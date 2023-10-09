@@ -8,6 +8,10 @@ app.secret_key = 'your_secret_key'  # Change this to a secure secret key
 DATABASE = 'SarasotaBikeGang.db'
 
 
+def is_authenticated():
+    return session.get('authenticated', False)
+
+
 # Helper function to establish a database connection
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -33,7 +37,7 @@ def login():
         else:
             return 'Login failed. Invalid username or password.'
 
-    return render_template('login.html')
+    return render_template('login.html', is_authenticated=is_authenticated)
 
 
 # Dashboard route for authenticated users

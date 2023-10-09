@@ -1,38 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-    Hello {{ name }}
     <hr>
 
     <!-- Booking & Payment Section -->
     <div id="bookingSection">
         <h2>Book & Pay</h2>
-        <form action="/bookAndPay" method="post">
-            <div class="form-group">
-                <hr> {{message}}
-                <label for="bike">Select Bike:</label>
-                <select class="form-control" id="bike" name="bike">
-                    <!-- Option values will be bike_id from the bikes table -->
-                    {% for _, bike in bikes.iterrows() %}
-                        <option value="{{ bike['bike_id'] }}">{{  bike['bike_id'] }}</option>
-                    {% endfor %}
 
-                </select>
-            </div>
-                <label for="paymentType">Payment Type:</label>
-            <div class="form-group">
-                <select class="form-control" id="paymentType" name="paymentType">
-                    <!-- Option values will be payment_type_id from the payment_types table -->
-                    {% for payment_type in payment_types %}
-                        <option value="{{ payment_type.id }}">{{ payment_type.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="amount">Amount:</label>
-                <input type="number" class="form-control" id="amount" name="amount" step="0.01">
-            </div>
-            <button type="submit" class="btn btn-success">Book & Pay</button>
-        </form>
+        {% if bikes|length > 0 %}
+            <form action="/bookAndPay" method="post">
+                <div class="form-group">
+                    <label for="bike">Select Bike:</label>
+                    <select class="form-control" id="bike" name="bike">
+                        <!-- Option values will be bike_id from the bikes table -->
+                        {% for _, bike in bikes.iterrows() %}
+                            <option value="{{ bike['bike_id'] }}">{{ bike['bike_id'] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="paymentType">Payment Type:</label>
+                    <select class="form-control" id="paymentType" name="paymentType">
+                        <!-- Option values will be payment_type_id from the payment_types table -->
+                        {% for payment_type in payment_types %}
+                            <option value="{{ payment_type.id }}">{{ payment_type.name }}</option>
+                        {% endfor %}
+                        <!-- Additional payment options -->
+                        <option value="credit_card">Credit Card</option>
+                        <option value="debit_card">Debit Card</option>
+                        <option value="paypal">PayPal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount:</label>
+                    <input type="number" class="form-control" id="amount" name="amount" step="0.01">
+                </div>
+                <button type="submit" class="btn btn-success">Book & Pay</button>
+            </form>
+        {% else %}
+            <p>{{ message }}</p>
+        {% endif %}
     </div>
 {% endblock %}

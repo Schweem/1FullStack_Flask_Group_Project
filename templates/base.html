@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bikeshare App</title>
+    <title>{% block title %}Bikeshare App{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -12,6 +12,12 @@
 <body>
 
     <div class="container mt-5">
+        {% if is_authenticated() %}
+            <p>Hello, {{ session.get('name', 'User') }}!
+                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('index') }}" class="btn btn-primary float-right">Home</a>
+            </p>
+        {% endif %}
         {% block content %}{% endblock %}
     </div>
 
@@ -22,4 +28,3 @@
 </body>
 
 </html>
-

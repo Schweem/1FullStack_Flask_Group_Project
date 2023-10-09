@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h2>Booking Successful</h2>
+        <p>Congratulations! Your booking was successful.</p>
+        <p>Details:</p>
+        <ul>
+            <li><strong>Bike ID:</strong> {{ bike_id }}</li>
+            <li><strong>Payment Type:</strong> {{ payment_type }}</li>
+            <li><strong>Amount Paid:</strong> ${{ amount }}</li>
+        </ul>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Go back to home</a>
+    </div>
+{% endblock %}

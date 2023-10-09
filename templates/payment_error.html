@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h2>Payment Error</h2>
+        <p>There was an issue processing your payment. Please try again later or contact support.</p>
+        <p>Error details:</p>
+        <pre>{{ error_message }}</pre>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Go back to home</a>
+    </div>
+{% endblock %}

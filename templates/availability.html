@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class = "userinfo">
-Hello {{ name }}
-    </div>
-    <hr>
-
     <!-- Check Available Bikes Section -->
     <div id="availabilitySection">
         <h2>Check Available Bikes</h2>
@@ -14,12 +9,30 @@ Hello {{ name }}
                 <label for="location">Select Location:</label>
                 <select class="form-control" id="location" name="location">
                     <!-- Option values will be station_id from the bikeshare_stations table -->
-                   {% for _, station in stations.iterrows() %}
-                    <option value="{{ station['station_id'] }}">{{ station['name'] }}</option>
-                {% endfor %}
+                    {% if stations is not none and not stations.empty %}
+                        {% for _, station in stations.iterrows() %}
+                            <option value="{{ station['station_id'] }}">{{ station['name'] }}</option>
+                        {% endfor %}
+                    {% endif %}
                 </select>
             </div>
             <button type="submit" class="btn btn-info">Book</button>
         </form>
+
+        {% if bikes is defined %}
+            {% if not bikes.empty %}
+                <h3>Bikes are available</h3>
+                <!-- Display available bikes here -->
+                <ul>
+                    {% for _, bike in bikes.iterrows() %}
+                        <li>{{ bike['bike_type'] }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No bikes available at the selected location</p>
+            {% endif %}
+        {% else %}
+            <p>Please select a location to check available bikes</p>
+        {% endif %}
     </div>
 {% endblock %}
