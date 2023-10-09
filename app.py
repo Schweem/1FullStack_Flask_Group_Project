@@ -103,51 +103,54 @@ def book_and_pay():
     # Validate the data (add your own validation logic)
 
     # Check for missing values
-    if not all([bike_id, payment_type, amount]):
+    if not all([bike_id, payment_type]):
         return render_template('payment_error.html', name=session.get('name', 'Unknown'),
                                error_message="Missing values for payment", is_authenticated=is_authenticated)
 
-    # Store payment information in the database
-    # You'll need to modify this part based on your database schema
-    conn = sqlite3.connect('SarasotaBikeGang.db')
-    cur = conn.cursor()
-    cur.execute("INSERT INTO payment_history (user_id, trip_index, amount, payment_date, description) VALUES (?, ?, ?, ?, ?)",
-                (session.get('user_id'), bike_id, amount, datetime.now(), 'Bike booking payment'))
-    conn.commit()
-    conn.close()
-
-    # Make the POST request to the payment processing service
-    payment_url = 'http://localhost:5000/process_payment'  # Update with your actual URL
-    payment_data = {
-        "card_number": "1234567890123456",
-        "amount": amount,
-        "currency": "USD"
+    # Store payment information in the session
+    session['payment_info'] = {
+        'bike_id': bike_id,
+        'payment_type': payment_type,
+        'amount': amount,
     }
-    headers = {'Content-type': 'application/json'}
-    json_data = json.dumps(payment_data)
 
-    # Make the POST request
-    response = requests.post(payment_url, data=json_data, headers=headers)
-
-    # Check the response
-    if response.status_code == 200:
-        result = response.json()
-        print("Payment processed successfully:")
-        print(result)
-        # Add any additional logic for booking the bike
-        return render_template('booking_success.html', name=session.get('name', 'Unknown'), bike_id=bike_id, payment_type=payment_type, amount=amount, is_authenticated=is_authenticated)
-
-    else:
-        print("Payment processing failed. Response code:", response.status_code)
-        print("Error message:", response.text)
-        # Handle payment failure, redirect to an error page or display a message
-        return render_template('payment_error.html', name=session.get('name', 'Unknown'), error_message="Payment processing failed", is_authenticated=is_authenticated)
+    # Render a page to input payment details
+    return render_template('process_payment.html', name=session.get('name', 'Unknown'), bike_id=bike_id, payment_type=payment_type, amount=amount, is_authenticated=is_authenticated)
 
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
-    # Your payment processing logic here
-    # This is where you interact with your payment processing service
-    return jsonify({"status": "success"})
+    try:
+        # Extract payment data from the session
+        payment_info = session.get('payment_info')
+
+        if not payment_info:
+            return jsonify({"status": "error", "message": "Payment information not found in session"})
+
+        # Make the POST request to the payment processing service
+        payment_url = 'http://localhost:5000/process_payment'  # Update with your actual URL
+        headers = {'Content-type': 'application/json'}
+        json_data = json.dumps(payment_info)
+
+        # Make the POST request
+        response = requests.post(payment_url, data=json_data, headers=headers)
+
+        # Check the response
+        if response.status_code == 200:
+            result = response.json()
+            print("Payment processed successfully:")
+            print(result)
+            # Add any additional logic for booking the bike
+            return render_template('booking_success.html', name=session.get('name', 'Unknown'), **payment_info, is_authenticated=is_authenticated)
+
+        else:
+            print("Payment processing failed. Response code:", response.status_code)
+            print("Error message:", response.text)
+            # Handle payment failure, redirect to an error page or display a message
+            return render_template('payment_error.html', name=session.get('name', 'Unknown'), error_message="Payment processing failed", is_authenticated=is_authenticated)
+    except Exception as e:
+        # Handle any unexpected errors
+        print("Unexpected error during payment processing:", str(e))
+        return render_template('payment_error.html', name=session.get('name', 'Unknown'), error_message="Unexpected error during payment processing", is_authenticated=is_authenticated)
 
 if __name__ == "__main__":
     app.run(debug=True)
